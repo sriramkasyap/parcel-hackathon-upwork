@@ -33,10 +33,6 @@ contract BountyStation is BountyStructs, Ownable {
         protocolWallet = _protocolWallet;
     }
 
-    function hello() public pure returns (string memory) {
-        return "Hello World";
-    }
-
     // Update Protocol Receiver Contract
     function updateProtocol(address _newProtocolWallet) external onlyOwner {
         protocolWallet = _newProtocolWallet;
@@ -62,12 +58,33 @@ contract BountyStation is BountyStructs, Ownable {
 
     // Create a Bounty
     function createBounty(
-        string memory _bountyTitle,
-        string memory _bountyDescription,
-        string memory _bountyLink,
+        string calldata _bountyTitle,
+        string calldata _bountyDescription,
+        string calldata _bountyLink,
         uint256 _bountyCategory,
         uint256 _bountyValueETH
-    ) public returns (uint256) {}
+    ) public payable returns (uint256) {
+        require(msg.value == _bountyValueETH, "Bounty Value not supplied");
+        bytes32 empty = keccak256(abi.encodePacked(""));
+        require(
+            keccak256(abi.encodePacked(_bountyTitle)) != empty &&
+                keccak256(abi.encodePacked(_bountyDescription)) != empty &&
+                keccak256(abi.encodePacked(_bountyLink)) != empty,
+            "Invalid Bounty data supplied"
+        );
+        require(categories[_bountyCategory].hunterId > 0, "Invalid Category selected");
+
+        bounties.push(
+            Bounty(msg.sender, _bountyTitle, _bountyDescription, _bountyLink, _bountyCategory, _bountyValueETH)
+        );
+
+        return bounties.length - 1;
+    }
+
+    // Get All Bounties
+    function getAllBounties() public view returns (Bounty[] memory) {
+        return bounties;
+    }
 
     // Withdraw a Bounty
     function withdrawBounty(uint256 _bountyId) public {}
