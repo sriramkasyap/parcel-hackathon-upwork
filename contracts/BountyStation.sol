@@ -126,6 +126,22 @@ contract BountyStation is BountyStructs, Ownable {
         return toReturn;
     }
 
+    // Withdraw a Bounty
+    function withdrawBounty(uint256 _bountyId) public bountyExists(_bountyId) onlyBountyCreator(_bountyId) {
+        payable(bounties[_bountyId].bountyCreator).transfer(bounties[_bountyId].bountyValueETH);
+        bool flag = false;
+        for (uint256 i = 0; i < creatorBounties[msg.sender].length; i++) {
+            if (creatorBounties[msg.sender][i] == _bountyId) {
+                delete creatorBounties[msg.sender][i];
+                flag = true;
+            }
+            if (flag) {
+                creatorBounties[msg.sender][i] = creatorBounties[msg.sender][i + 1];
+            }
+        }
+        delete bounties[_bountyId];
+    }
+
     // Create Proposal to bounty
     function addProposalToBounty(
         uint256 _bountyId,

@@ -78,24 +78,24 @@ async function main(): Promise<void> {
   const addr2Bounties = await BountyStation.connect(address2).getMyBounties();
   console.log({ addr2Bounties });
 
-  // // Withdraw Bounty
-  // try {
-  //   let preBal: BigNumber = await address2.getBalance();
+  // Withdraw Bounty
+  try {
+    let preBal: BigNumber = await address2.getBalance();
 
-  //   let bountyValue = allBounties[1].bountyValueETH;
+    let bountyValue = allBounties[1].bountyValueETH;
 
-  //   let res = await BountyStation.connect(address2).withdrawBounty(1);
-  //   res = await res.wait();
+    let res = await BountyStation.connect(address2).withdrawBounty(1);
+    res = await res.wait();
 
-  //   let postBal: BigNumber = await address2.getBalance();
+    let postBal: BigNumber = await address2.getBalance();
 
-  //   // This value should equal the value sent while creating the bounty
-  //   const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
+    // This value should equal the value sent while creating the bounty
+    const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
 
-  //   console.log({ returned: returned.eq(bountyValue) });
-  // } catch (error: any) {
-  //   console.error(error.reason || error.message);
-  // }
+    console.log({ returned: returned.eq(bountyValue) });
+  } catch (error: any) {
+    console.error(error.reason || error.message);
+  }
 
   // Add proposal to Bounty
   try {
