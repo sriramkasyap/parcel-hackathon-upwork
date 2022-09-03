@@ -130,9 +130,9 @@ contract BountyStation is BountyStructs, Ownable {
     function withdrawBounty(uint256 _bountyId) public bountyExists(_bountyId) onlyBountyCreator(_bountyId) {
         payable(bounties[_bountyId].bountyCreator).transfer(bounties[_bountyId].bountyValueETH);
         bool flag = false;
-        for (uint256 i = 0; i < creatorBounties[msg.sender].length; i++) {
+        for (uint256 i = 0; i < creatorBounties[msg.sender].length - 1; i++) {
             if (creatorBounties[msg.sender][i] == _bountyId) {
-                delete creatorBounties[msg.sender][i];
+                // delete creatorBounties[msg.sender][i];
                 flag = true;
             }
             if (flag) {
@@ -208,7 +208,9 @@ contract BountyStation is BountyStructs, Ownable {
     function getMyProposals() public view returns (Proposal[] memory) {}
 
     // Get Proposals for deal
-    function getProposalsOfDeal(uint256 _dealId) public view returns (Proposal[] memory) {}
+    function getProposalsOfBounty(uint256 _bountyId) public view bountyExists(_bountyId) returns (Proposal[] memory) {
+        return proposals[_bountyId];
+    }
 
     // Get Submissions for deal
     function getSubmissionsOfDeal(uint256 _dealId) public view returns (Submission[] memory) {}
