@@ -24,7 +24,8 @@ const chainIds = {
   ropsten: 3,
 };
 
-const MNEMONIC = process.env.MNEMONIC || "";
+const MNEMONIC =
+  process.env.MNEMONIC || "antenna learn shrug vacant sweet sing enemy upset envelope pond ribbon weather";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const ALCHEMY_KEY = process.env.ALCHEMY_KEY || "";
@@ -65,7 +66,6 @@ const config: HardhatUserConfig = {
       // },
       chainId: chainIds.hardhat,
     },
-    mainnet: createTestnetConfig("mainnet"),
     goerli: createTestnetConfig("goerli"),
     kovan: createTestnetConfig("kovan"),
     rinkeby: createTestnetConfig("rinkeby"),
