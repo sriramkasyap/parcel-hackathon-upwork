@@ -73,6 +73,11 @@
         },
         {
           "internalType": "uint256",
+          "name": "_proposalValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_depositValueETH",
           "type": "uint256"
         }
@@ -85,7 +90,7 @@
           "type": "uint256"
         }
       ],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -97,8 +102,13 @@
         },
         {
           "internalType": "uint256",
-          "name": "_submissionid",
+          "name": "_submissionId",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_submissionComment",
+          "type": "string"
         }
       ],
       "name": "approveSubmission",
@@ -149,7 +159,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_dealid",
+          "name": "_dealId",
           "type": "uint256"
         },
         {
@@ -174,6 +184,11 @@
       "outputs": [
         {
           "components": [
+            {
+              "internalType": "uint256",
+              "name": "bountyId",
+              "type": "uint256"
+            },
             {
               "internalType": "address",
               "name": "bountyCreator",
@@ -281,7 +296,57 @@
     },
     {
       "inputs": [],
-      "name": "getMyDeals",
+      "name": "getMyBounties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "bountyId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "bountyCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyLink",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bountyCategory",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bountyValueETH",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Bounty[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMyCreatorDeals",
       "outputs": [
         {
           "components": [
@@ -324,6 +389,11 @@
               "internalType": "uint256",
               "name": "hunterDepositETH",
               "type": "uint256"
+            },
+            {
+              "internalType": "enum BountyStructs.DealStatus",
+              "name": "dealStatus",
+              "type": "uint8"
             }
           ],
           "internalType": "struct BountyStructs.Deal[]",
@@ -336,47 +406,57 @@
     },
     {
       "inputs": [],
-      "name": "getMyProposals",
+      "name": "getMyHunterDeals",
       "outputs": [
         {
           "components": [
             {
-              "internalType": "uint256",
-              "name": "bountyId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "proposalTitle",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "proposalDescription",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "proposalLink",
-              "type": "string"
-            },
-            {
               "internalType": "address",
-              "name": "proposalCreator",
+              "name": "dealCreator",
               "type": "address"
             },
             {
+              "internalType": "address",
+              "name": "dealReceiver",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "dealTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dealDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dealLink",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
-              "name": "depositValueETH",
+              "name": "dealCategory",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "proposalValue",
+              "name": "dealValueETH",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hunterDepositETH",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum BountyStructs.DealStatus",
+              "name": "dealStatus",
+              "type": "uint8"
             }
           ],
-          "internalType": "struct BountyStructs.Proposal[]",
+          "internalType": "struct BountyStructs.Deal[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -388,14 +468,19 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_dealId",
+          "name": "_bountyId",
           "type": "uint256"
         }
       ],
-      "name": "getProposalsOfDeal",
+      "name": "getProposalsOfBounty",
       "outputs": [
         {
           "components": [
+            {
+              "internalType": "uint256",
+              "name": "proposalId",
+              "type": "uint256"
+            },
             {
               "internalType": "uint256",
               "name": "bountyId",
