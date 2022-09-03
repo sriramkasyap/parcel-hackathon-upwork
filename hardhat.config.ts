@@ -60,9 +60,9 @@ const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
+      // accounts: {
+      //   mnemonic: MNEMONIC,
+      // },
       chainId: chainIds.hardhat,
     },
     mainnet: createTestnetConfig("mainnet"),
