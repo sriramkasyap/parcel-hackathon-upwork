@@ -23,6 +23,9 @@ contract BountyStation is BountyStructs, Ownable {
     // Map active deals for a hunter
     mapping(address => uint256[]) hunterDeals;
 
+    // Map active propsals for a hunter
+    mapping(address => uint256[]) hunterproposals;
+
     // Modifiers
 
     // Functions
@@ -59,26 +62,60 @@ contract BountyStation is BountyStructs, Ownable {
 
     // Create a Bounty
     function createBounty(
-        string memory bountyTitle,
-        string memory bountyDescription,
-        string memory bountyLink,
-        uint256 bountyCategory,
-        uint256 bountyValueETH
+        string memory _bountyTitle,
+        string memory _bountyDescription,
+        string memory _bountyLink,
+        uint256 _bountyCategory,
+        uint256 _bountyValueETH
     ) public returns (uint256) {}
 
     // Withdraw a Bounty
+    function withdrawBounty(uint256 _bountyId) public {}
 
     // Create Proposal to bounty
+    function addProposalToBounty(
+        uint256 _bountyId,
+        string memory _proposalTitle,
+        string memory _proposalDescription,
+        string memory _proposalLink,
+        uint256 _depositValueETH
+    ) public returns (uint256) {}
 
     // Select proposal for bounty
+    function selectProposal(uint256 _bountyId, uint256 _proposalId) public {}
 
     // Add Submission to deal
+    function submitToDeal(
+        uint256 _dealId,
+        string memory _submissionTitle,
+        string memory _submissionDescription,
+        string memory _submissionLink
+    ) public {}
 
     // Approve Submission
+    function approveSubmission(uint256 _dealId, uint256 _submissionid) public {}
 
     // Dispute Submission
+    function disputeSubmission(
+        uint256 _dealid,
+        uint256 _submissionId,
+        string memory _comment
+    ) public {}
 
     // Withdraw a Deal
+    function withdrawDeal(uint256 _dealId) public {}
+
+    // Get My Deals
+    function getMyDeals() public view returns (Deal[] memory) {}
+
+    // get my proposals
+    function getMyProposals() public view returns (Proposal[] memory) {}
+
+    // Get Proposals for deal
+    function getProposalsOfDeal(uint256 _dealId) public view returns (Proposal[] memory) {}
+
+    // Get Submissions for deal
+    function getSubmissionsOfDeal(uint256 _dealId) public view returns (Submission[] memory) {}
 
     // Hooks
 }

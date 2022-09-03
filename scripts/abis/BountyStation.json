@@ -1,0 +1,576 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_protocolWallet",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_categoryName",
+          "type": "string"
+        }
+      ],
+      "name": "addCategory",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_bountyId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_proposalTitle",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_proposalDescription",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_proposalLink",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_depositValueETH",
+          "type": "uint256"
+        }
+      ],
+      "name": "addProposalToBounty",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_submissionid",
+          "type": "uint256"
+        }
+      ],
+      "name": "approveSubmission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_bountyTitle",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bountyDescription",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_bountyLink",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_bountyCategory",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_bountyValueETH",
+          "type": "uint256"
+        }
+      ],
+      "name": "createBounty",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_submissionId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_comment",
+          "type": "string"
+        }
+      ],
+      "name": "disputeSubmission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllCategories",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "categoryName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "creatorId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hunterId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Category[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_catId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCategory",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "categoryName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "creatorId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hunterId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Category",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMyDeals",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dealCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "dealReceiver",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "dealTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dealDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "dealLink",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "dealCategory",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "dealValueETH",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hunterDepositETH",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Deal[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMyProposals",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "bountyId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalLink",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "proposalCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "depositValueETH",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Proposal[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProposalsOfDeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "bountyId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "proposalLink",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "proposalCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "depositValueETH",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Proposal[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSubmissionsOfDeal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "dealId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "submissionTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "submissionDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "submissionLink",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "submissionCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "enum BountyStructs.Status",
+              "name": "submissionStatus",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "submissionComment",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct BountyStructs.Submission[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "hello",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_bountyId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "selectProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_submissionTitle",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_submissionDescription",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_submissionLink",
+          "type": "string"
+        }
+      ],
+      "name": "submitToDeal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newProtocolWallet",
+          "type": "address"
+        }
+      ],
+      "name": "updateProtocol",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_bountyId",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawBounty",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_dealId",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawDeal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}
