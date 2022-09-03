@@ -11,6 +11,7 @@ contract BountyStructs {
 
     // Structs
     struct Bounty {
+        uint256 bountyId;
         address bountyCreator;
         string bountyTitle;
         string bountyDescription;
@@ -31,6 +32,7 @@ contract BountyStructs {
     }
 
     struct Proposal {
+        uint256 proposalId;
         uint256 bountyId;
         string proposalTitle;
         string proposalDescription;

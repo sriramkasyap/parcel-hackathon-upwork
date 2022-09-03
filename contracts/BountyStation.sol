@@ -23,10 +23,13 @@ contract BountyStation is BountyStructs, Ownable {
     // Map bounties for a creator
     mapping(address => uint256[]) creatorBounties;
 
+    // Map deals for a creator
+    mapping(address => uint256[]) creatorDeals;
+
     // Map active deals for a hunter
     mapping(address => uint256[]) hunterDeals;
 
-    // Map active propsals for a hunter
+    // Map active propsals for a hunter => bountyId => proposalId
     mapping(address => mapping(uint256 => uint256[])) hunterproposals;
 
     // Modifiers
@@ -55,6 +58,11 @@ contract BountyStation is BountyStructs, Ownable {
 
     modifier bountyExists(uint256 _bountyId) {
         require(bounties[_bountyId].bountyValueETH > 0, "Bounty Does not Exist");
+        _;
+    }
+
+    modifier proposalExists(uint256 _bountyId, uint256 _proposalId) {
+        require(proposals[_bountyId][_proposalId].proposalValue > 0, "Proposal Does not Exist");
         _;
     }
 
@@ -105,7 +113,15 @@ contract BountyStation is BountyStructs, Ownable {
         require(categories[_bountyCategory].hunterId > 0, "Invalid Category selected");
 
         bounties.push(
-            Bounty(msg.sender, _bountyTitle, _bountyDescription, _bountyLink, _bountyCategory, _bountyValueETH)
+            Bounty(
+                bounties.length,
+                msg.sender,
+                _bountyTitle,
+                _bountyDescription,
+                _bountyLink,
+                _bountyCategory,
+                _bountyValueETH
+            )
         );
         creatorBounties[msg.sender].push(bounties.length - 1);
         return bounties.length - 1;
@@ -129,17 +145,7 @@ contract BountyStation is BountyStructs, Ownable {
     // Withdraw a Bounty
     function withdrawBounty(uint256 _bountyId) public bountyExists(_bountyId) onlyBountyCreator(_bountyId) {
         payable(bounties[_bountyId].bountyCreator).transfer(bounties[_bountyId].bountyValueETH);
-        bool flag = false;
-        for (uint256 i = 0; i < creatorBounties[msg.sender].length - 1; i++) {
-            if (creatorBounties[msg.sender][i] == _bountyId) {
-                // delete creatorBounties[msg.sender][i];
-                flag = true;
-            }
-            if (flag) {
-                creatorBounties[msg.sender][i] = creatorBounties[msg.sender][i + 1];
-            }
-        }
-        delete bounties[_bountyId];
+        _deleteBounty(_bountyId, msg.sender);
     }
 
     // Create Proposal to bounty
@@ -164,6 +170,7 @@ contract BountyStation is BountyStructs, Ownable {
 
         proposals[_bountyId].push(
             Proposal(
+                proposals[_bountyId].length,
                 _bountyId,
                 _proposalTitle,
                 _proposalDescription,
@@ -178,7 +185,31 @@ contract BountyStation is BountyStructs, Ownable {
     }
 
     // Select proposal for bounty
-    function selectProposal(uint256 _bountyId, uint256 _proposalId) public {}
+    function selectProposal(uint256 _bountyId, uint256 _proposalId)
+        public
+        bountyExists(_bountyId)
+        proposalExists(_bountyId, _proposalId)
+        onlyBountyCreator(_bountyId)
+    {
+        deals.push(
+            Deal(
+                bounties[_bountyId].bountyCreator,
+                proposals[_bountyId][_proposalId].proposalCreator,
+                bounties[_bountyId].bountyTitle,
+                bounties[_bountyId].bountyDescription,
+                bounties[_bountyId].bountyLink,
+                bounties[_bountyId].bountyCategory,
+                proposals[_bountyId][_proposalId].proposalValue,
+                proposals[_bountyId][_proposalId].depositValueETH
+            )
+        );
+
+        creatorDeals[bounties[_bountyId].bountyCreator].push(deals.length - 1);
+        hunterDeals[proposals[_bountyId][_proposalId].proposalCreator].push(deals.length - 1);
+
+        _deleteBounty(_bountyId, msg.sender);
+        delete proposals[_bountyId];
+    }
 
     // Add Submission to deal
     function submitToDeal(
@@ -202,7 +233,14 @@ contract BountyStation is BountyStructs, Ownable {
     function withdrawDeal(uint256 _dealId) public {}
 
     // Get My Deals
-    function getMyDeals() public view returns (Deal[] memory) {}
+    function getMyCreatorDeals() public view returns (Deal[] memory) {
+        Deal[] memory toReturn = new Deal[](creatorDeals[msg.sender].length);
+
+        for (uint256 i = 0; i < creatorDeals[msg.sender].length; i++) {
+            toReturn[i] = deals[creatorDeals[msg.sender][i]];
+        }
+        return toReturn;
+    }
 
     // get my proposals
     function getMyProposals() public view returns (Proposal[] memory) {}
@@ -216,4 +254,17 @@ contract BountyStation is BountyStructs, Ownable {
     function getSubmissionsOfDeal(uint256 _dealId) public view returns (Submission[] memory) {}
 
     // Hooks
+
+    function _deleteBounty(uint256 _bountyId, address creator) internal {
+        bool flag = false;
+        for (uint256 i = 0; i < creatorBounties[creator].length - 1; i++) {
+            if (creatorBounties[creator][i] == _bountyId) {
+                flag = true;
+            }
+            if (flag) {
+                creatorBounties[creator][i] = creatorBounties[creator][i + 1];
+            }
+        }
+        delete bounties[_bountyId];
+    }
 }
