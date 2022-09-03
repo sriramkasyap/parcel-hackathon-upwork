@@ -37,6 +37,7 @@ contract BountyStructs {
         string proposalLink;
         address proposalCreator;
         uint256 depositValueETH;
+        uint256 proposalValue;
     }
 
     struct Submission {

@@ -15,7 +15,7 @@ contract BountyStation is BountyStructs, Ownable {
     address protocolWallet;
 
     // Map proposals to respective bountyId
-    mapping(uint256 => Proposal[]) propsals;
+    mapping(uint256 => Proposal[]) proposals;
 
     // Map submit to respective bountyId
     mapping(uint256 => Submission[]) submissions;
@@ -27,6 +27,33 @@ contract BountyStation is BountyStructs, Ownable {
     mapping(address => uint256[]) hunterproposals;
 
     // Modifiers
+    modifier onlyBountyCreator(uint256 _bountyId) {
+        require(msg.sender == bounties[_bountyId].bountyCreator, "Only Bounty creators can perform this action");
+        _;
+    }
+
+    modifier onlyDealCreator(uint256 _dealId) {
+        require(msg.sender == deals[_dealId].dealCreator, "Only Deal creators can perform this action");
+        _;
+    }
+
+    modifier onlyProposalCreator(uint256 _bountyId, uint256 _proposalId) {
+        require(
+            msg.sender == proposals[_bountyId][_proposalId].proposalCreator,
+            "Only Proposal creator can perform this action"
+        );
+        _;
+    }
+
+    modifier onlyDealReciever(uint256 _dealId) {
+        require(msg.sender == deals[_dealId].dealReceiver, "Only Deal receiver can perform this action");
+        _;
+    }
+
+    modifier bountyExists(uint256 _bountyId) {
+        require(bounties[_bountyId].bountyValueETH > 0, "Bounty Does not Exist");
+        _;
+    }
 
     // Functions
     constructor(address _protocolWallet) {
@@ -64,7 +91,8 @@ contract BountyStation is BountyStructs, Ownable {
         uint256 _bountyCategory,
         uint256 _bountyValueETH
     ) public payable returns (uint256) {
-        require(msg.value == _bountyValueETH, "Bounty Value not supplied");
+        require(_bountyValueETH > 0, "Bounty Value has to be greater than 0");
+        require(msg.value == _bountyValueETH, "Bounty Value does not match with the supplied amount");
         bytes32 empty = keccak256(abi.encodePacked(""));
         require(
             keccak256(abi.encodePacked(_bountyTitle)) != empty &&
@@ -87,7 +115,10 @@ contract BountyStation is BountyStructs, Ownable {
     }
 
     // Withdraw a Bounty
-    function withdrawBounty(uint256 _bountyId) public {}
+    function withdrawBounty(uint256 _bountyId) public bountyExists(_bountyId) onlyBountyCreator(_bountyId) {
+        payable(bounties[_bountyId].bountyCreator).transfer(bounties[_bountyId].bountyValueETH);
+        delete bounties[_bountyId];
+    }
 
     // Create Proposal to bounty
     function addProposalToBounty(
