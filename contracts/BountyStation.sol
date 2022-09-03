@@ -11,8 +11,8 @@ contract BountyStation is BountyStructs, Ownable {
     Deal[] deals;
 
     uint256 identifierNonce = 1;
-
     address protocolWallet;
+    bytes32 empty = keccak256(abi.encodePacked(""));
 
     // Map proposals to respective bountyId
     mapping(uint256 => Proposal[]) proposals;
@@ -20,11 +20,14 @@ contract BountyStation is BountyStructs, Ownable {
     // Map submit to respective bountyId
     mapping(uint256 => Submission[]) submissions;
 
+    // Map bounties for a creator
+    mapping(address => uint256[]) creatorBounties;
+
     // Map active deals for a hunter
     mapping(address => uint256[]) hunterDeals;
 
     // Map active propsals for a hunter
-    mapping(address => uint256[]) hunterproposals;
+    mapping(address => mapping(uint256 => uint256[])) hunterproposals;
 
     // Modifiers
     modifier onlyBountyCreator(uint256 _bountyId) {
@@ -93,7 +96,6 @@ contract BountyStation is BountyStructs, Ownable {
     ) public payable returns (uint256) {
         require(_bountyValueETH > 0, "Bounty Value has to be greater than 0");
         require(msg.value == _bountyValueETH, "Bounty Value does not match with the supplied amount");
-        bytes32 empty = keccak256(abi.encodePacked(""));
         require(
             keccak256(abi.encodePacked(_bountyTitle)) != empty &&
                 keccak256(abi.encodePacked(_bountyDescription)) != empty &&
@@ -105,7 +107,7 @@ contract BountyStation is BountyStructs, Ownable {
         bounties.push(
             Bounty(msg.sender, _bountyTitle, _bountyDescription, _bountyLink, _bountyCategory, _bountyValueETH)
         );
-
+        creatorBounties[msg.sender].push(bounties.length - 1);
         return bounties.length - 1;
     }
 
@@ -114,10 +116,14 @@ contract BountyStation is BountyStructs, Ownable {
         return bounties;
     }
 
-    // Withdraw a Bounty
-    function withdrawBounty(uint256 _bountyId) public bountyExists(_bountyId) onlyBountyCreator(_bountyId) {
-        payable(bounties[_bountyId].bountyCreator).transfer(bounties[_bountyId].bountyValueETH);
-        delete bounties[_bountyId];
+    // Get My Bounties
+    function getMyBounties() public view returns (Bounty[] memory) {
+        Bounty[] memory toReturn = new Bounty[](creatorBounties[msg.sender].length);
+
+        for (uint256 i = 0; i < creatorBounties[msg.sender].length; i++) {
+            toReturn[i] = bounties[creatorBounties[msg.sender][i]];
+        }
+        return toReturn;
     }
 
     // Create Proposal to bounty
@@ -126,8 +132,34 @@ contract BountyStation is BountyStructs, Ownable {
         string memory _proposalTitle,
         string memory _proposalDescription,
         string memory _proposalLink,
+        uint256 _proposalValue,
         uint256 _depositValueETH
-    ) public returns (uint256) {}
+    ) public payable bountyExists(_bountyId) returns (uint256) {
+        require(_proposalValue > 0, "Proposal Value has to be greater than 0");
+        require(_depositValueETH > 0, "Proposal Value has to be greater than 0");
+        require(msg.value == _depositValueETH, "Bounty Value does not match with the supplied amount");
+        require(
+            keccak256(abi.encodePacked(_proposalTitle)) != empty &&
+                keccak256(abi.encodePacked(_proposalDescription)) != empty &&
+                keccak256(abi.encodePacked(_proposalLink)) != empty,
+            "Invalid Bounty data supplied"
+        );
+        require(_depositValueETH >= (_proposalValue / 10), "Atleast 10% of the proposal value has to be deposited");
+
+        proposals[_bountyId].push(
+            Proposal(
+                _bountyId,
+                _proposalTitle,
+                _proposalDescription,
+                _proposalLink,
+                msg.sender,
+                _depositValueETH,
+                _proposalValue
+            )
+        );
+        hunterproposals[msg.sender][_bountyId].push(proposals[_bountyId].length - 1);
+        return proposals[_bountyId].length - 1;
+    }
 
     // Select proposal for bounty
     function selectProposal(uint256 _bountyId, uint256 _proposalId) public {}

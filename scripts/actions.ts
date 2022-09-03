@@ -26,7 +26,7 @@ async function main(): Promise<void> {
   const categories = await BountyStation.getAllCategories();
   console.log({ categories });
 
-  // If Çategory deos not exist
+  // If Category doesn't exist
   try {
     const category = await BountyStation.getCategory(3);
     console.log({ category });
@@ -74,23 +74,44 @@ async function main(): Promise<void> {
   // Get all bounties
   const allBounties = await BountyStation.getAllBounties();
 
-  // Withdraw Bounty
+  // Get My Bounties
+  const addr2Bounties = await BountyStation.connect(address2).getMyBounties();
+  console.log({ addr2Bounties });
+
+  // // Withdraw Bounty
+  // try {
+  //   let preBal: BigNumber = await address2.getBalance();
+
+  //   let bountyValue = allBounties[1].bountyValueETH;
+
+  //   let res = await BountyStation.connect(address2).withdrawBounty(1);
+  //   res = await res.wait();
+
+  //   let postBal: BigNumber = await address2.getBalance();
+
+  //   // This value should equal the value sent while creating the bounty
+  //   const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
+
+  //   console.log({ returned: returned.eq(bountyValue) });
+  // } catch (error: any) {
+  //   console.error(error.reason || error.message);
+  // }
+
+  // Add proposal to Bounty
   try {
-    let preBal: BigNumber = await address2.getBalance();
-
-    let bountyValue = allBounties[1].bountyValueETH;
-
-    let res = await BountyStation.connect(address2).withdrawBounty(1);
-    res = await res.wait();
-
-    let postBal: BigNumber = await address2.getBalance();
-
-    // This value should equal the value sent while creating the bounty
-    const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
-
-    console.log({ returned: returned.eq(bountyValue) });
-  } catch (error: any) {
-    console.error(error.reason || error.message);
+    let proposed = await BountyStation.connect(address2).addProposalToBounty(
+      0,
+      "My Proposal to First",
+      "This is my Proposal",
+      "https://google.com",
+      500000000000,
+      50000000000,
+      {
+        value: 50000000000,
+      },
+    );
+  } catch (error) {
+    console.error(error);
   }
 }
 
