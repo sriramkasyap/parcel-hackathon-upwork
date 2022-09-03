@@ -3,8 +3,9 @@ pragma solidity ^0.8.0;
 
 import "./BountyStructs.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-contract BountyStation is BountyStructs, Ownable {
+contract BountyStation is BountyStructs, Ownable, ERC1155 {
     // Storage
     Category[] categories;
     Bounty[] bounties;
@@ -79,13 +80,13 @@ contract BountyStation is BountyStructs, Ownable {
         _;
     }
 
-    modifier subissionExists(uint256 _dealId, uint256 _submissionId) {
+    modifier submissionExists(uint256 _dealId, uint256 _submissionId) {
         require(submissions[_dealId][_submissionId].dealId == _dealId, "Submission Does not Exist");
         _;
     }
 
     // Functions
-    constructor(address _protocolWallet) {
+    constructor(address _protocolWallet) ERC1155("HUNT") {
         protocolWallet = _protocolWallet;
     }
 
@@ -262,11 +263,21 @@ contract BountyStation is BountyStructs, Ownable {
         uint256 _dealId,
         uint256 _submissionId,
         string calldata _submissionComment
-    ) public dealExists(_dealId) subissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
+    ) public dealExists(_dealId) submissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
         submissions[_dealId][_submissionId].submissionStatus = Status.approved;
         submissions[_dealId][_submissionId].submissionComment = _submissionComment;
         deals[_dealId].dealStatus = DealStatus.completed;
         payable(deals[_dealId].dealReceiver).transfer(deals[_dealId].dealValueETH + deals[_dealId].hunterDepositETH);
+
+        // (Deal Value in wei * 100) Initial value
+        // 5%  deducted for each of the disputes
+        // n disputes means n+1 submissions
+        uint256 tokensToMint = (100 * deals[_dealId].dealValueETH) -
+            ((submissions[_dealId].length - 1) * 5 * (deals[_dealId].dealValueETH));
+
+        _mint(deals[_dealId].dealReceiver, categories[deals[_dealId].dealCategory].hunterId, tokensToMint, "");
+
+        _mint(deals[_dealId].dealCreator, categories[deals[_dealId].dealCategory].creatorId, tokensToMint, "");
     }
 
     // Dispute Submission
@@ -274,7 +285,7 @@ contract BountyStation is BountyStructs, Ownable {
         uint256 _dealId,
         uint256 _submissionId,
         string memory _comment
-    ) public dealExists(_dealId) subissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
+    ) public dealExists(_dealId) submissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
         submissions[_dealId][_submissionId].submissionStatus = Status.disputed;
         submissions[_dealId][_submissionId].submissionComment = _comment;
     }
