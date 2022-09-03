@@ -20,15 +20,21 @@ async function main(): Promise<void> {
   const result = await BountyStation.hello();
   console.log({ result });
 
+  // Add Cateogory
   await BountyStation.addCategory("Product");
   await BountyStation.addCategory("Marketing");
   await BountyStation.addCategory("News");
 
+  // Get Categories
   const categories = await BountyStation.getAllCategories();
   console.log({ categories });
 
-  const category = await BountyStation.getCategory(3);
-  console.log({ category });
+  try {
+    const category = await BountyStation.getCategory(3);
+    console.log({ category });
+  } catch (error: any) {
+    console.error(error.reason);
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
