@@ -72,7 +72,7 @@ async function main(): Promise<void> {
   }
 
   // Get all bounties
-  const allBounties = await BountyStation.getAllBounties();
+  let allBounties = await BountyStation.getAllBounties();
 
   // Get My Bounties
   const addr2Bounties = await BountyStation.connect(address2).getMyBounties();
@@ -97,6 +97,10 @@ async function main(): Promise<void> {
     console.error(error.reason || error.message);
   }
 
+  // Get all bounties
+  // allBounties = await BountyStation.getAllBounties();
+  // console.log({ allBounties });
+
   // Add proposal to Bounty
   try {
     let proposed = await BountyStation.connect(address2).addProposalToBounty(
@@ -113,6 +117,10 @@ async function main(): Promise<void> {
   } catch (error) {
     console.error(error);
   }
+
+  // Get Proposals of Bounty
+  let proposals = await BountyStation.getProposalsOfBounty(0);
+  console.log({ proposals });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
