@@ -9,6 +9,12 @@ contract BountyStructs {
         disputed
     }
 
+    enum DealStatus {
+        ongoing,
+        completed,
+        withdrawn
+    }
+
     // Structs
     struct Bounty {
         uint256 bountyId;
@@ -29,6 +35,7 @@ contract BountyStructs {
         uint256 dealCategory;
         uint256 dealValueETH;
         uint256 hunterDepositETH;
+        DealStatus dealStatus;
     }
 
     struct Proposal {

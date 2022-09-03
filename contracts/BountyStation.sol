@@ -17,7 +17,7 @@ contract BountyStation is BountyStructs, Ownable {
     // Map proposals to respective bountyId
     mapping(uint256 => Proposal[]) proposals;
 
-    // Map submit to respective bountyId
+    // Map submissions to respective bountyId
     mapping(uint256 => Submission[]) submissions;
 
     // Map bounties for a creator
@@ -43,6 +43,14 @@ contract BountyStation is BountyStructs, Ownable {
         _;
     }
 
+    modifier onlyCreatorOrReceiver(uint256 _dealId) {
+        require(
+            msg.sender == deals[_dealId].dealCreator || msg.sender == deals[_dealId].dealReceiver,
+            "Only Deal creators or receivers can perform this action"
+        );
+        _;
+    }
+
     modifier onlyProposalCreator(uint256 _bountyId, uint256 _proposalId) {
         require(
             msg.sender == proposals[_bountyId][_proposalId].proposalCreator,
@@ -51,7 +59,7 @@ contract BountyStation is BountyStructs, Ownable {
         _;
     }
 
-    modifier onlyDealReciever(uint256 _dealId) {
+    modifier onlyDealReceiver(uint256 _dealId) {
         require(msg.sender == deals[_dealId].dealReceiver, "Only Deal receiver can perform this action");
         _;
     }
@@ -61,8 +69,18 @@ contract BountyStation is BountyStructs, Ownable {
         _;
     }
 
+    modifier dealExists(uint256 _dealId) {
+        require(deals[_dealId].dealValueETH > 0, "Bounty Does not Exist");
+        _;
+    }
+
     modifier proposalExists(uint256 _bountyId, uint256 _proposalId) {
         require(proposals[_bountyId][_proposalId].proposalValue > 0, "Proposal Does not Exist");
+        _;
+    }
+
+    modifier subissionExists(uint256 _dealId, uint256 _submissionId) {
+        require(submissions[_dealId][_submissionId].dealId == _dealId, "Submission Does not Exist");
         _;
     }
 
@@ -200,7 +218,8 @@ contract BountyStation is BountyStructs, Ownable {
                 bounties[_bountyId].bountyLink,
                 bounties[_bountyId].bountyCategory,
                 proposals[_bountyId][_proposalId].proposalValue,
-                proposals[_bountyId][_proposalId].depositValueETH
+                proposals[_bountyId][_proposalId].depositValueETH,
+                DealStatus.ongoing
             )
         );
 
@@ -217,20 +236,59 @@ contract BountyStation is BountyStructs, Ownable {
         string memory _submissionTitle,
         string memory _submissionDescription,
         string memory _submissionLink
-    ) public {}
+    ) public dealExists(_dealId) onlyDealReceiver(_dealId) {
+        if (submissions[_dealId].length > 0) {
+            require(
+                submissions[_dealId][submissions[_dealId].length - 1].submissionStatus == Status.disputed,
+                "You can only submit if the previous submission is disputed"
+            );
+        }
+
+        submissions[_dealId].push(
+            Submission(
+                _dealId,
+                _submissionTitle,
+                _submissionDescription,
+                _submissionLink,
+                msg.sender,
+                Status.pending,
+                ""
+            )
+        );
+    }
 
     // Approve Submission
-    function approveSubmission(uint256 _dealId, uint256 _submissionid) public {}
+    function approveSubmission(
+        uint256 _dealId,
+        uint256 _submissionId,
+        string calldata _submissionComment
+    ) public dealExists(_dealId) subissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
+        submissions[_dealId][_submissionId].submissionStatus = Status.approved;
+        submissions[_dealId][_submissionId].submissionComment = _submissionComment;
+        deals[_dealId].dealStatus = DealStatus.completed;
+        payable(deals[_dealId].dealReceiver).transfer(deals[_dealId].dealValueETH + deals[_dealId].hunterDepositETH);
+    }
 
     // Dispute Submission
     function disputeSubmission(
-        uint256 _dealid,
+        uint256 _dealId,
         uint256 _submissionId,
         string memory _comment
-    ) public {}
+    ) public dealExists(_dealId) subissionExists(_dealId, _submissionId) onlyDealCreator(_dealId) {
+        submissions[_dealId][_submissionId].submissionStatus = Status.disputed;
+        submissions[_dealId][_submissionId].submissionComment = _comment;
+    }
 
     // Withdraw a Deal
-    function withdrawDeal(uint256 _dealId) public {}
+    function withdrawDeal(uint256 _dealId) public dealExists(_dealId) onlyCreatorOrReceiver(_dealId) {
+        if (msg.sender == deals[_dealId].dealCreator) {
+            payable(deals[_dealId].dealReceiver).transfer(deals[_dealId].hunterDepositETH);
+            payable(deals[_dealId].dealCreator).transfer((deals[_dealId].dealValueETH / 10) * 9);
+        } else {
+            payable(deals[_dealId].dealCreator).transfer((deals[_dealId].dealValueETH));
+        }
+        payable(protocolWallet).transfer((deals[_dealId].dealValueETH / 10));
+    }
 
     // Get My Deals
     function getMyCreatorDeals() public view returns (Deal[] memory) {
@@ -242,16 +300,24 @@ contract BountyStation is BountyStructs, Ownable {
         return toReturn;
     }
 
-    // get my proposals
-    function getMyProposals() public view returns (Proposal[] memory) {}
+    function getMyHunterDeals() public view returns (Deal[] memory) {
+        Deal[] memory toReturn = new Deal[](hunterDeals[msg.sender].length);
 
-    // Get Proposals for deal
+        for (uint256 i = 0; i < hunterDeals[msg.sender].length; i++) {
+            toReturn[i] = deals[hunterDeals[msg.sender][i]];
+        }
+        return toReturn;
+    }
+
+    // Get Proposals for bounty
     function getProposalsOfBounty(uint256 _bountyId) public view bountyExists(_bountyId) returns (Proposal[] memory) {
         return proposals[_bountyId];
     }
 
     // Get Submissions for deal
-    function getSubmissionsOfDeal(uint256 _dealId) public view returns (Submission[] memory) {}
+    function getSubmissionsOfDeal(uint256 _dealId) public view dealExists(_dealId) returns (Submission[] memory) {
+        return submissions[_dealId];
+    }
 
     // Hooks
 
