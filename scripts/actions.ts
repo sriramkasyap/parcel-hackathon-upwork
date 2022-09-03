@@ -159,6 +159,10 @@ async function main(): Promise<void> {
   let deals2 = await BountyStation.connect(address1).getMyCreatorDeals();
   let deals4 = await BountyStation.connect(address2).getMyCreatorDeals();
   console.log({ deals2, deals4 });
+
+  let dealsh2 = await BountyStation.connect(address2).getMyHunterDeals();
+  let dealsh4 = await BountyStation.connect(address4).getMyHunterDeals();
+  console.log({ dealsh2, dealsh4 });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
