@@ -142,7 +142,7 @@
           "type": "uint256"
         }
       ],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -166,6 +166,51 @@
       "name": "disputeSubmission",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllBounties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "bountyCreator",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyTitle",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "bountyLink",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bountyCategory",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bountyValueETH",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct BountyStructs.Bounty[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -324,6 +369,11 @@
               "internalType": "uint256",
               "name": "depositValueETH",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proposalValue",
+              "type": "uint256"
             }
           ],
           "internalType": "struct BountyStructs.Proposal[]",
@@ -374,6 +424,11 @@
             {
               "internalType": "uint256",
               "name": "depositValueETH",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proposalValue",
               "type": "uint256"
             }
           ],
@@ -439,19 +494,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "hello",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "pure",
       "type": "function"
     },
     {
