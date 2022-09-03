@@ -11,7 +11,7 @@ async function main(): Promise<void> {
   // to make sure everything is compiled
   // await run("compile");
   // We get the contract to deploy
-  const [address1, address2, address3] = await ethers.getSigners();
+  const [address1, address2, address3, address4] = await ethers.getSigners();
   const BountyStationFactory: ContractFactory = await ethers.getContractFactory("BountyStation");
   const BountyStation: Contract = await BountyStationFactory.deploy(address1.getAddress());
   await BountyStation.deployed();
@@ -24,7 +24,7 @@ async function main(): Promise<void> {
 
   // Get Categories
   const categories = await BountyStation.getAllCategories();
-  console.log({ categories });
+  // console.log({ categories });
 
   // If Category doesn't exist
   try {
@@ -73,29 +73,30 @@ async function main(): Promise<void> {
 
   // Get all bounties
   let allBounties = await BountyStation.getAllBounties();
+  console.log({ allBounties });
 
   // Get My Bounties
   const addr2Bounties = await BountyStation.connect(address2).getMyBounties();
-  console.log({ addr2Bounties });
+  // console.log({ addr2Bounties });
 
   // Withdraw Bounty
-  try {
-    let preBal: BigNumber = await address2.getBalance();
+  // try {
+  //   let preBal: BigNumber = await address2.getBalance();
 
-    let bountyValue = allBounties[1].bountyValueETH;
+  //   let bountyValue = allBounties[1].bountyValueETH;
 
-    let res = await BountyStation.connect(address2).withdrawBounty(1);
-    res = await res.wait();
+  //   let res = await BountyStation.connect(address2).withdrawBounty(1);
+  //   res = await res.wait();
 
-    let postBal: BigNumber = await address2.getBalance();
+  //   let postBal: BigNumber = await address2.getBalance();
 
-    // This value should equal the value sent while creating the bounty
-    const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
+  //   // This value should equal the value sent while creating the bounty
+  //   const returned = postBal.sub(preBal).add(res.gasUsed.mul(res.effectiveGasPrice));
 
-    console.log({ returned: returned.eq(bountyValue) });
-  } catch (error: any) {
-    console.error(error.reason || error.message);
-  }
+  //   console.log({ returned: returned.eq(bountyValue) });
+  // } catch (error: any) {
+  //   console.error(error.reason || error.message);
+  // }
 
   // Get all bounties
   // allBounties = await BountyStation.getAllBounties();
@@ -103,7 +104,7 @@ async function main(): Promise<void> {
 
   // Add proposal to Bounty
   try {
-    let proposed = await BountyStation.connect(address2).addProposalToBounty(
+    await BountyStation.connect(address2).addProposalToBounty(
       0,
       "My Proposal to First",
       "This is my Proposal",
@@ -114,13 +115,50 @@ async function main(): Promise<void> {
         value: 50000000000,
       },
     );
+
+    await BountyStation.connect(address3).addProposalToBounty(
+      0,
+      "Address 3 to Bounty 0",
+      "This is my Proposal",
+      "https://google.com",
+      700000000000,
+      70000000000,
+      {
+        value: 70000000000,
+      },
+    );
+
+    await BountyStation.connect(address4).addProposalToBounty(
+      2,
+      "Address 4 to Bounty 2",
+      "This is my Proposal",
+      "https://google.com",
+      100000000000,
+      10000000000,
+      {
+        value: 10000000000,
+      },
+    );
   } catch (error) {
     console.error(error);
   }
 
   // Get Proposals of Bounty
-  let proposals = await BountyStation.getProposalsOfBounty(0);
-  console.log({ proposals });
+  let proposals0 = await BountyStation.getProposalsOfBounty(0);
+  let proposals2 = await BountyStation.getProposalsOfBounty(2);
+  // console.log({ proposals0 });
+  // console.log({ proposals2 });
+
+  try {
+    await BountyStation.selectProposal(0, 0);
+    await BountyStation.connect(address3).selectProposal(2, 0);
+  } catch (error) {
+    console.error(error);
+  }
+
+  let deals2 = await BountyStation.connect(address1).getMyCreatorDeals();
+  let deals4 = await BountyStation.connect(address2).getMyCreatorDeals();
+  console.log({ deals2, deals4 });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
